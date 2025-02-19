@@ -1,4 +1,4 @@
-package com.hcring.level02.normal;
+package com.hcring.chap03_method_and_api.level02.normal;
 
 import java.util.Random;
 

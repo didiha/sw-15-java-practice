@@ -1,4 +1,4 @@
-package com.hcring.level01.basic;
+package com.hcring.chap03_method_and_api.level01.basic;
 
 public class Calculator {
     public static void checkMethod() {
