@@ -1,6 +1,4 @@
-package com.hcring.level01.basic;
-
-import java.awt.*;
+package com.hcring.level01.basic.chap08;
 
 public class ShapeManagerApplication {
     public static void main(String[] args) {

@@ -1,4 +1,4 @@
-package com.hcring.level01.basic;
+package com.hcring.level01.basic.chap08;
 
 public abstract class Shape {
     /* 넓이 계산 메소드 */

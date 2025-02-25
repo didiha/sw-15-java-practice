@@ -1,4 +1,4 @@
-package com.hcring.level01.basic;
+package com.hcring.level01.basic.chap08;
 
 public class Circle extends Shape implements Resizable{
     private double radius;
