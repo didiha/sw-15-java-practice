@@ -1,8 +1,6 @@
-package com.hcring.level01.nomal;
+package com.hcring.level01.chap12;
 
 import java.util.Arrays;
-
-import static java.util.Collections.swap;
 
 public class Application1 {
     public static void main(String[] args) {
