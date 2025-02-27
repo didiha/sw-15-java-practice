@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class Application2 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        Queue<String> url = new LinkedList<String>();
+        Queue<String> url = new LinkedList<>();
         String inputUrl = "";
 
         while (true) {
