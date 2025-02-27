@@ -1,4 +1,4 @@
-package com.hcring.level01.chap12;
+package com.hcring.level01.basic.chap12;
 
 import java.util.Arrays;
 
