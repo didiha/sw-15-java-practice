@@ -18,9 +18,8 @@ public class Application1 {
 
         // 1. 모든 직원의 이름을 쉼표로 구분된 문자열로 반환
         String allNames = employees.stream()
-                .collect(Collectors.joining(", "))
-                .map(Employee::getName);// 코드 작성
-
+                .map(Employee::getName)// 코드 작성
+                .collect(Collectors.joining(", "));
 
 
                 // 2. IT 부서에서 급여가 5,000 이상인 직원의 이름을 급여 순으로 내림차순 정렬하여 반환
