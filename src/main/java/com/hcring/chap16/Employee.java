@@ -1,4 +1,4 @@
-package com.hcring.chap16.employee;
+package com.hcring.chap16;
 
 public class Employee {
 

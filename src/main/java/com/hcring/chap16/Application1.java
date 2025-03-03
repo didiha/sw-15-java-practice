@@ -7,20 +7,28 @@ public class Application1 {
 
     public static void main(String[] args) {
 
-        List<com.hcring.chap16.employee.Employee> employees = Arrays.asList(
-                new com.hcring.chap16.employee.Employee("홍길동", 25, "IT", 6000),
-                new com.hcring.chap16.employee.Employee("김철수", 28, "HR", 3000),
-                new com.hcring.chap16.employee.Employee("이영희", 30, "IT", 7000),
-                new com.hcring.chap16.employee.Employee("박민수", 22, "영업", 4000),
-                new com.hcring.chap16.employee.Employee("최지현", 35, "HR", 3500),
-                new com.hcring.chap16.employee.Employee("한석봉", 40, "IT", 5000)
+        List<Employee> employees = Arrays.asList(
+                new Employee("홍길동", 25, "IT", 6000),
+                new Employee("김철수", 28, "HR", 3000),
+                new Employee("이영희", 30, "IT", 7000),
+                new Employee("박민수", 22, "영업", 4000),
+                new Employee("최지현", 35, "HR", 3500),
+                new Employee("한석봉", 40, "IT", 5000)
         );
 
         // 1. 모든 직원의 이름을 쉼표로 구분된 문자열로 반환
-        String allNames = // 코드 작성
+        String allNames = employees.stream()
+                .collect(Collectors.joining(", "))
+                .map(Employee::getName);// 코드 작성
+
+
 
                 // 2. IT 부서에서 급여가 5,000 이상인 직원의 이름을 급여 순으로 내림차순 정렬하여 반환
-                List<String> highSalaryIT = // 코드 작성
+        List<String> highSalaryIT = employees.stream()
+                        .filter(e -> e.getDepartment().equals("IT") && e.getSalary() >= 5000)
+                        .sorted(Comparator.comparingInt(Employee::getSalary).reversed())
+                        .map(Employee::getName)
+                        .collect(Collectors.toList());
 
         // 3. 각 부서별 평균 급여를 계산하여 맵으로 반환
         Map<String, Double> averageSalaryByDept = // 코드 작성
