@@ -111,6 +111,11 @@ public class Application {
                 return;
             }
 
+            if(!existingUser.isActivate()){
+                System.out.println("활동 상태가 비활성화된 회원입니다. 활성화로 바꾼 뒤 회원 정보를 수정할 수 있습니다.");
+                return;
+            }
+
             System.out.print("비밀번호 확인: ");
             String currentPassword = scanner.nextLine();
 
@@ -156,31 +161,6 @@ public class Application {
         }
     }
 
-
-    private void setUserActivateStatus() {
-        try {
-            System.out.print("활동 상태를 변경할 회원 번호를 입력하세요: ");
-            int userNum = scanner.nextInt();
-            scanner.nextLine();
-
-            User existingUser = userService.findUserByNo(userNum);
-            if (existingUser == null) {
-                System.out.println("해당 번호의 회원을 찾을 수 없습니다.");
-                return;
-            }
-
-            System.out.print("비밀번호 확인: ");
-            String currentPassword = scanner.nextLine();
-
-            if(existingUser.isActivate() == true){
-                System.out.print("");
-            }
-
-        } catch (IllegalArgumentException e) {
-            System.out.println("회원 활동 상태 수정 실패: " + e.getMessage());
-        }
-    }
-
     private String[] inputHobbies(String[] existingHobbies) {
         if (existingHobbies == null) {
             // 새로운 유저 등록 시
@@ -211,6 +191,30 @@ public class Application {
                 hobbies[i] = hobbyInput.isEmpty() ? existingHobbies[i] : hobbyInput; // 기존 취미 유지
             }
             return hobbies;
+        }
+    }
+
+
+    private void setUserActivateStatus() {
+        try {
+            System.out.print("활동 상태를 변경할 회원 번호를 입력하세요: ");
+            int userNum = scanner.nextInt();
+            scanner.nextLine();
+
+            User existingUser = userService.findUserByNo(userNum);
+            if (existingUser == null) {
+                System.out.println("해당 번호의 회원을 찾을 수 없습니다.");
+                return;
+            }
+
+            System.out.print("비밀번호 확인: ");
+            String currentPassword = scanner.nextLine();
+
+            userService.toggleUserActivation(existingUser, currentPassword);
+            System.out.println("회원 활동 상태가 변경되었습니다. 현재 상태: " + (existingUser.isActivate() ? "활성화" : "비활성화"));
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("회원 활동 상태 전환 실패: " + e.getMessage());
         }
     }
 

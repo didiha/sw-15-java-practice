@@ -75,4 +75,18 @@ public class UserService {
     private boolean isValidPassword(String password) {
         return password.length() >= MIN_PASSWORD_LENGTH && PASSWORD_PATTERN.matcher(password).matches();
     }
+
+    public void toggleUserActivation(User user, String currentPassword) {
+        User existingUser = userRepository.selectUserByNo(user.getNo());
+        if (existingUser == null) {
+            throw new IllegalArgumentException("해당 회원을 찾을 수 없습니다.");
+        }
+
+        if (!existingUser.getPwd().equals(currentPassword)) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        existingUser.setActivate(!existingUser.isActivate());
+        userRepository.updateUser(existingUser);
+    }
 }

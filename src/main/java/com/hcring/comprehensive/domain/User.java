@@ -37,6 +37,8 @@ public class User implements Serializable {
     public MbtiType getMbtiType() { return mbtiType; }
     public boolean isActivate() { return activate; }
 
+    public void setActivate(boolean activate) { this.activate = activate; }
+
     @Override
     public String toString() {
         return "User{" +
@@ -45,7 +47,7 @@ public class User implements Serializable {
                 ", age=" + age +
                 ", hobbies=" + Arrays.toString(hobbies) +
                 ", mbtiType=" + mbtiType +
+                ", activate=" + activate +
                 '}';
     }
-
 }
