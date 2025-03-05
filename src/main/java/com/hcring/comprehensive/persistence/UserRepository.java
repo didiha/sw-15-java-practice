@@ -1,7 +1,6 @@
 package com.hcring.comprehensive.persistence;
 
 import com.hcring.comprehensive.domain.User;
-
 import java.util.ArrayList;
 import java.util.List;
 

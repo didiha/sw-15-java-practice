@@ -1,34 +1,38 @@
 package com.hcring.comprehensive.ui;
 
 import com.hcring.comprehensive.domain.MbtiType;
+import com.hcring.comprehensive.domain.Post;
 import com.hcring.comprehensive.domain.User;
 import com.hcring.comprehensive.persistence.FileUserStorage;
+import com.hcring.comprehensive.persistence.PostRepository;
 import com.hcring.comprehensive.persistence.UserRepository;
+import com.hcring.comprehensive.service.PostService;
 import com.hcring.comprehensive.service.UserService;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /* 실행 및 UI */
 public class Application {
     private final UserService userService;
     private final Scanner scanner;
+    private PostService postService;
 
     public Application() {
         UserRepository userRepository = new UserRepository(new FileUserStorage());
+        PostRepository postRepository = new PostRepository();
         this.userService = new UserService(userRepository);
+        this.postService = new PostService(postRepository);
         this.scanner = new Scanner(System.in);
     }
 
     public void run() {
         while (true) {
             System.out.println("\n===== 회원 관리 프로그램 =====");
-            System.out.println("1. 모든 회원 조회");
-            System.out.println("2. 회원 찾기");
-            System.out.println("3. 회원 가입");
-            System.out.println("4. 회원 정보 수정");
-            System.out.println("5. 회원 삭제");
-            System.out.println("6. 회원 활성화/비활성화");
-            System.out.println("9. 프로그램 종료");
+            System.out.println("1. 모든 회원 조회\t" + "2. 회원 찾기\t\t" + "3. 회원 가입");
+            System.out.println("4. 회원 정보 수정\t" + "5. 회원 삭제\t\t" + "6. 회원 활성화/비활성화");
+            System.out.println("7. 게시글 작성\t" + "8. 게시글 조회\t" + "9. 게시글 삭제");
+            System.out.println("10. 댓글 작성\t\t" + "11. 댓글 삭제 \t" + "12. 프로그램 종료");
             System.out.print("메뉴 선택: ");
 
             int choice = scanner.nextInt();
@@ -42,7 +46,9 @@ public class Application {
                     case 4 -> modifyUser();
                     case 5 -> removeUser();
                     case 6 -> setUserActivateStatus();
-                    case 9 -> {
+                    case 7 -> posting();
+                    case 8 -> showAllPosts();
+                    case 12 -> {
                         System.out.println("프로그램을 종료합니다.");
                         return;
                     }
@@ -217,6 +223,48 @@ public class Application {
             System.out.println("회원 활동 상태 전환 실패: " + e.getMessage());
         }
     }
+
+    private void posting(){
+        try{
+            System.out.print("게시글 작성할 회원 번호 입력: ");
+            int userNo = scanner.nextInt();
+            scanner.nextLine();
+
+            User existingUser = userService.findUserByNo(userNo);
+            if (existingUser == null) {
+                System.out.println("해당 번호의 회원을 찾을 수 없습니다.");
+                return;
+            }
+
+            if(!existingUser.isActivate()){
+                System.out.println("활동 상태가 비활성화된 회원입니다. 활성화로 바꾼 뒤 게시글을 작성할 수 있습니다..");
+                return;
+            }
+
+            System.out.print("비밀번호 확인: ");
+            String currentPassword = scanner.nextLine();
+
+            System.out.print("제목을 입력하세요: ");
+            String title = scanner.nextLine();
+
+            System.out.print("글을 입력하세요: ");
+            String content = scanner.nextLine();
+
+            if (title == null || title.trim().isEmpty() || content == null || content.trim().isEmpty()) {
+                throw new IllegalArgumentException("제목 또는 글에 내용이 없습니다.");
+            }
+
+            int nextPostNum = postService.findAllPosts().size() + 1;
+
+            Post post = new Post(nextPostNum, title, content, existingUser.getId(), new ArrayList<>());
+
+            postService.addPost(post, existingUser, currentPassword);
+        } catch (IllegalArgumentException e) {
+            System.out.println("게시글 작성 실패: " + e.getMessage());
+        }
+    }
+
+    private void showAllPosts() {postService.findAllPosts().forEach(System.out::println);}
 
     public static void main(String[] args) {
         new Application().run();
