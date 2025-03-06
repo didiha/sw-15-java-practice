@@ -1,7 +1,7 @@
 package com.hcring.comprehensive.persistence;
 
+import com.hcring.comprehensive.domain.Post;
 import com.hcring.comprehensive.domain.User;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,16 +19,25 @@ public class UserRepository {
         return new ArrayList<>(userList);
     }
 
-    public User selectUserByNo(int userNo) {
+    public User selectUserByNo(long userNo) {
         return userList.stream().filter(user -> user.getUserNo() == userNo).findFirst().orElse(null);
     }
 
-    public void insertUser(User user) {
+    public void inputUser(User user) {
+        long newPostNo = generateNewUserNo();
+        user.setUserNo(newPostNo);
         userList.add(user);
         userStorage.saveUsers(userList);
     }
 
-    public void deleteUser(int userNo) {
+    private long generateNewUserNo() {
+        return userList.stream()
+                .mapToLong(User::getUserNo)
+                .max()
+                .orElse(0) + 1;
+    }
+
+    public void deleteUser(long userNo) {
         userList.removeIf(user -> user.getUserNo() == userNo);
         userStorage.saveUsers(userList);
     }

@@ -3,7 +3,7 @@ package com.hcring.comprehensive.ui;
 import com.hcring.comprehensive.domain.MbtiType;
 import com.hcring.comprehensive.domain.Post;
 import com.hcring.comprehensive.domain.User;
-import com.hcring.comprehensive.persistence.FilePostsStorage;
+import com.hcring.comprehensive.persistence.FilePostStorage;
 import com.hcring.comprehensive.persistence.FileUserStorage;
 import com.hcring.comprehensive.persistence.PostRepository;
 import com.hcring.comprehensive.persistence.UserRepository;
@@ -12,20 +12,22 @@ import com.hcring.comprehensive.service.UserService;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 /* 실행 및 UI */
 public class Application {
     private final UserService userService;
     private final Scanner scanner;
-    private PostService postService;
+    private final PostService postService;
 
     public Application() {
         UserRepository userRepository = new UserRepository(new FileUserStorage());
-        PostRepository postRepository = new PostRepository(new FilePostsStorage());
-        this.userService = new UserService(userRepository);
-        this.postService = new PostService(postRepository);
+        PostRepository postRepository = new PostRepository(new FilePostStorage());
         this.scanner = new Scanner(System.in);
+        this.userService = new UserService(userRepository, null);
+        this.postService = new PostService(postRepository, userService);
+        userService.setPostService(postService);
     }
 
     public void run() {
@@ -33,8 +35,8 @@ public class Application {
             System.out.println("\n===== 회원 관리 프로그램 =====");
             System.out.println("1. 모든 회원 조회\t" + "2. 회원 찾기\t\t" + "3. 회원 가입");
             System.out.println("4. 회원 정보 수정\t" + "5. 회원 삭제\t\t" + "6. 회원 활성화/비활성화");
-            System.out.println("7. 게시글 작성\t" + "8. 게시글 조회\t" + "9. 게시글 삭제");
-            System.out.println("10. 댓글 작성\t\t" + "11. 댓글 삭제 \t" + "12. 프로그램 종료");
+            System.out.println("7. 게시글 작성\t" + "8. 게시글 조회\t" + "9. 게시글 수정\t\t" + "10. 게시물 삭제");
+            System.out.println("11. 댓글 작성\t\t" + "12. 댓글 수정\t\t" + "13. 댓글 삭제 \t\t" + "14. 프로그램 종료");
             System.out.print("메뉴 선택: ");
             int choice;
 
@@ -50,7 +52,10 @@ public class Application {
                     case 6 -> setUserActivateStatus();
                     case 7 -> posting();
                     case 8 -> showAllPosts();
-                    case 12 -> {
+                    case 9 -> modifyPost();
+                    case 10 -> removePost();
+
+                    case 14 -> {
                         System.out.println("프로그램을 종료합니다.");
                         return;
                     }
@@ -70,7 +75,7 @@ public class Application {
 
     private void findUserByNo() {
         System.out.print("조회할 회원 번호 입력: ");
-        int userNo = scanner.nextInt();
+        long userNo = scanner.nextInt();
         scanner.nextLine();
 
         System.out.println(userService.findUserByNo(userNo).toString());
@@ -79,7 +84,7 @@ public class Application {
     private void registerUser() {
         try {
             System.out.print("아이디 입력: ");
-            String id = scanner.nextLine();
+            String userId = scanner.nextLine();
 
             System.out.print("비밀번호 입력: ");
             String pwd = scanner.nextLine();
@@ -93,11 +98,11 @@ public class Application {
             System.out.print("Mbti 입력 (대문자로): ");
             MbtiType mbtiType = MbtiType.fromString(scanner.nextLine());
 
-            int nextUserNo = userService.findAllUsers().size() + 1;
-            User newUser = new User(nextUserNo, id, pwd, age, hobbies, mbtiType, true);
+            long nextUserNo = userService.findAllUsers().size() + 1;
+            User newUser = new User(nextUserNo, userId, pwd, age, hobbies, mbtiType, true);
 
             userService.registerUser(newUser);
-            System.out.println("회원 가입 성공: " + id);
+            System.out.println("회원 가입 성공: " + userId);
 
         } catch (IllegalArgumentException e) {
             System.out.println("회원 가입 실패: " + e.getMessage());
@@ -107,13 +112,13 @@ public class Application {
     private void modifyUser() {
         try {
             System.out.print("수정할 회원 번호 입력: ");
-            int userNo = scanner.nextInt();
+            long userNo = scanner.nextInt();
             scanner.nextLine();
 
             User existingUser = userService.findUserByNo(userNo);
 
             if(!existingUser.isActivate()){
-                System.out.println("활동 상태가 비활성화된 회원입니다. 활성화로 바꾼 뒤 회원 정보를 수정할 수 있습니다.");
+                System.out.println("활동 상태가 비활성화된 회원입니다. 활성화로 바꾼 뒤 정보를 수정할 수 있습니다.");
                 return;
             }
 
@@ -122,9 +127,9 @@ public class Application {
             userService.validatePassword(userNo, currentPassword);
 
             System.out.println("수정할 정보를 입력하세요 (변경하지 않으려면 Enter 입력)");
-            System.out.print("새로운 아이디 (" + existingUser.getId() + "): ");
-            String id = scanner.nextLine();
-            if (id.isEmpty()) id = existingUser.getId();
+            System.out.print("새로운 아이디 (" + existingUser.getUserId() + "): ");
+            String userId = scanner.nextLine();
+            if (userId.isEmpty()) userId = existingUser.getUserId();
 
             System.out.print("새로운 비밀번호 입력: ");
             String newPassword = scanner.nextLine();
@@ -140,9 +145,9 @@ public class Application {
             String mbtiTypeInput = scanner.nextLine();
             MbtiType mbtiType = mbtiTypeInput.isEmpty() ? existingUser.getMbtiType() : MbtiType.fromString(mbtiTypeInput);
 
-            User updatedUser = new User(userNo, id, newPassword, age, hobbies, mbtiType, true);
+            User updatedUser = new User(userNo, userId, newPassword, age, hobbies, mbtiType, true);
             userService.modifyUser(updatedUser);
-            System.out.println("회원 정보 수정 완료: " + id);
+            System.out.println("회원 정보 수정 완료: " + userId);
 
         } catch (IllegalArgumentException e) {
             System.out.println("회원 정보 수정 실패: " + e.getMessage());
@@ -152,7 +157,7 @@ public class Application {
     private void removeUser() {
         try {
             System.out.print("삭제할 회원 번호 입력: ");
-            int userNo = scanner.nextInt();
+            long userNo = scanner.nextInt();
             scanner.nextLine();
 
             userService.findUserByNo(userNo);
@@ -162,7 +167,7 @@ public class Application {
             userService.validatePassword(userNo, currentPassword);
 
             userService.removeUser(userNo);
-            System.out.println("회원 삭제 완료 (ID: " + userNo + ")");
+            System.out.println("회원 삭제 완료 (삭제된 회원 번호: " + userNo + ")");
 
         } catch (IllegalArgumentException e) {
             System.out.println("회원 삭제 실패: " + e.getMessage());
@@ -206,7 +211,7 @@ public class Application {
     private void setUserActivateStatus() {
         try {
             System.out.print("활동 상태를 변경할 회원 번호를 입력하세요: ");
-            int userNo = scanner.nextInt();
+            long userNo = scanner.nextInt();
             scanner.nextLine();
 
             User existingUser = userService.findUserByNo(userNo);
@@ -226,7 +231,7 @@ public class Application {
     private void posting(){
         try{
             System.out.print("게시글 작성할 회원 번호 입력: ");
-            int userNo = scanner.nextInt();
+            long userNo = scanner.nextInt();
             scanner.nextLine();
 
             User existingUser = userService.findUserByNo(userNo);
@@ -240,7 +245,6 @@ public class Application {
             String currentPassword = scanner.nextLine();
             userService.validatePassword(userNo, currentPassword);
 
-            labelPost:
             System.out.print("제목을 입력하세요: ");
             String title = scanner.nextLine();
 
@@ -249,9 +253,9 @@ public class Application {
 
             postService.isEmptyPost(title, content);
 
-            int nextPostNo = postService.findAllPosts().size() + 1;
+            long nextPostNo = postService.findAllPosts().size() + 1;
 
-            Post post = new Post(nextPostNo, title, content, existingUser.getId(), new ArrayList<>());
+            Post post = new Post(nextPostNo, title, content, existingUser.getUserId(), new ArrayList<>());
             postService.addPost(post);
 
             System.out.println("게시글 작성이 완료되었습니다.");
@@ -262,30 +266,86 @@ public class Application {
 
     private void showAllPosts() {postService.findAllPosts().forEach(System.out::println);}
 
-    private void removePost() {
-        try {
+    private void modifyPost(){
+        try{
             System.out.print("회원 번호를 입력하세요: ");
-            int userNo = scanner.nextInt();
+            long userNo = scanner.nextInt();
             scanner.nextLine();
 
-            userService.findUserByNo(userNo);
+            User existingUser = userService.findUserByNo(userNo);
+
+            if(!existingUser.isActivate()){
+                System.out.println("활동 상태가 비활성화된 회원입니다. 활성화로 바꾼 뒤 정보를 수정할 수 있습니다.");
+                return;
+            }
 
             System.out.print("비밀번호 확인: ");
             String currentPassword = scanner.nextLine();
             userService.validatePassword(userNo, currentPassword);
 
-            System.out.print("삭제할 게시물 번호 입력: ");
-            int postNo = scanner.nextInt();
+            List<Post> postList = postService.usersPosts(userNo);
+
+            System.out.println("작성한 게시글 목록: \n" + postList);
+            System.out.print("수정할 게시글 번호 입력: ");
+
+            long selectPostNo = scanner.nextInt();
             scanner.nextLine();
 
-            postService.removePost(postNo);
-            System.out.println("게시물 삭제 완료 (ID: " + postNo + ")");
+            Post selectPost = postService.findPostByNo(selectPostNo);
+
+            System.out.println("수정할 정보를 입력하세요 (변경하지 않으려면 Enter 입력)");
+            System.out.print("새로운 제목 입력: ");
+            String title = scanner.nextLine();
+            if (title.isEmpty()) title = selectPost.getTitle();
+
+            System.out.print("새로운 글 입력: ");
+            String content = scanner.nextLine();
+            if (content.isEmpty()) content = selectPost.getContent();
+
+            Post modifyPost = new Post(selectPostNo, title, content, selectPost.getAuthor(), selectPost.getComments());
+            postService.modifyPost(modifyPost);
+
+            System.out.println("게시글 수정이 완료되었습니다.");
+        } catch (IllegalArgumentException e) {
+            System.out.println("게시물 수정 실패: " + e.getMessage());
+        }
+    }
+
+    private void removePost() {
+        try {
+            System.out.print("회원 번호를 입력하세요: ");
+            long userNo = scanner.nextInt();
+            scanner.nextLine();
+
+            User existingUser = userService.findUserByNo(userNo);
+
+            if(!existingUser.isActivate()){
+                System.out.println("활동 상태가 비활성화된 회원입니다. 활성화로 바꾼 뒤 회원 정보를 수정할 수 있습니다.");
+                return;
+            }
+
+            System.out.print("비밀번호 확인: ");
+            String currentPassword = scanner.nextLine();
+            userService.validatePassword(userNo, currentPassword);
+
+            List<Post> userPosts = postService.usersPosts(userNo);
+
+            System.out.println("작성한 게시물 목록: \n" + userPosts);
+
+            System.out.print("삭제할 게시물 번호 입력: ");
+            long deletePostNo = scanner.nextInt();
+            scanner.nextLine();
+
+            if (userPosts.stream().noneMatch(post -> post.getPostNo() == deletePostNo)) {
+                throw new IllegalArgumentException("삭제할 수 없는 게시물입니다.");
+            }
+
+            postService.removePost(deletePostNo);
+            System.out.println("게시물 삭제 완료 (ID: " + deletePostNo + ")");
 
         } catch (IllegalArgumentException e) {
             System.out.println("게시물 삭제 실패: " + e.getMessage());
         }
-
-
     }
 
     public static void main(String[] args) {

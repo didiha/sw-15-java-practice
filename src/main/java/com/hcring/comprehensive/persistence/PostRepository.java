@@ -7,11 +7,11 @@ import java.util.List;
 
 public class PostRepository {
     private List<Post> postList;
-    private final PostsStorage postsStorage;
+    private final PostStorage postStorage;
 
-    public PostRepository(PostsStorage postsStorage) {
-        this.postsStorage = postsStorage;
-        this.postList = postsStorage.loadPosts();
+    public PostRepository(PostStorage postStorage) {
+        this.postStorage = postStorage;
+        this.postList = postStorage.loadPosts();
     }
 
     public List<Post> selectAllPosts() {
@@ -19,12 +19,31 @@ public class PostRepository {
     }
 
     public void inputPost(Post post) {
+        long newPostNo = generateNewPostId();
+        post.setPostNo(newPostNo);
         postList.add(post);
-        postsStorage.savePosts(postList);
+        postStorage.savePosts(postList);
     }
 
-    public void deletePost(int postNo) {
-        postList.remove(postNo);
-        postsStorage.savePosts(postList);
+    private long generateNewPostId() {
+        return postList.stream()
+                .mapToLong(Post::getPostNo)
+                .max()
+                .orElse(0) + 1;
+    }
+
+    public void updatePost(Post modifyPostNo) {
+        for (int i = 0; i < postList.size(); i++) {
+            if (postList.get(i).getPostNo() == modifyPostNo.getPostNo()) {
+                postList.set(i, modifyPostNo);
+                postStorage.savePosts(postList);
+                break;
+            }
+        }
+    }
+
+    public void deletePost(long postNo) {
+        postList.removeIf(post -> post.getPostNo() == postNo);
+        postStorage.savePosts(postList);
     }
 }

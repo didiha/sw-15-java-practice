@@ -7,17 +7,17 @@ import java.util.Arrays;
 * setter 제거 후 update 메소드만 사용
 * */
 public class User implements Serializable {
-    private int userNo;
-    private String id;
+    private long userNo;
+    private String userId;
     private String pwd;
     private int age;
     private String[] hobbies;
     private MbtiType mbtiType;
     private boolean activate;
 
-    public User(int userNo, String id, String pwd, int age, String[] hobbies, MbtiType mbtiType, boolean activate) {
+    public User(long userNo, String userId, String pwd, int age, String[] hobbies, MbtiType mbtiType, boolean activate) {
         this.userNo = userNo;
-        this.id = id;
+        this.userId = userId;
         this.pwd = pwd;
         this.age = age;
         this.hobbies = hobbies;
@@ -25,25 +25,26 @@ public class User implements Serializable {
         this.activate = activate;
     }
 
-    public User update(String id, int age, String[] hobbies, MbtiType mbtiType, boolean activate) {
-        return new User(this.userNo, id, this.pwd, age, hobbies, mbtiType, this.activate);
+    public User update(String userId, int age, String[] hobbies, MbtiType mbtiType, boolean activate) {
+        return new User(this.userNo, userId, this.pwd, age, hobbies, mbtiType, this.activate);
     }
 
-    public int getUserNo() { return userNo; }
-    public String getId() { return id; }
+    public long getUserNo() { return userNo; }
+    public String getUserId() { return userId; }
     public String getPwd() { return pwd; }
     public int getAge() { return age; }
     public String[] getHobbies() { return hobbies; }
     public MbtiType getMbtiType() { return mbtiType; }
     public boolean isActivate() { return activate; }
 
+    public void setUserNo(long userNo) { this.userNo = userNo; }
     public void setActivate(boolean activate) { this.activate = activate; }
 
     @Override
     public String toString() {
         return "User{" +
                 "userNo=" + userNo +
-                ", id='" + id + '\'' +
+                ", id='" + userId + '\'' +
                 ", age=" + age +
                 ", hobbies=" + Arrays.toString(hobbies) +
                 ", mbtiType=" + mbtiType +
