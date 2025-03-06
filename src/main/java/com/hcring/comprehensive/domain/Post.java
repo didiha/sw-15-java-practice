@@ -1,9 +1,10 @@
 package com.hcring.comprehensive.domain;
 
 import javax.xml.stream.events.Comment;
+import java.io.Serializable;
 import java.util.List;
 
-public class Post {
+public class Post implements Serializable {
     private long postId;
     private String title;
     private String content;

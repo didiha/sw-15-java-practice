@@ -1,6 +1,7 @@
 package com.hcring.comprehensive.persistence;
 
 import com.hcring.comprehensive.domain.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,8 +19,8 @@ public class UserRepository {
         return new ArrayList<>(userList);
     }
 
-    public User selectUserByNo(int no) {
-        return userList.stream().filter(user -> user.getNo() == no).findFirst().orElse(null);
+    public User selectUserByNo(int userNo) {
+        return userList.stream().filter(user -> user.getUserNo() == userNo).findFirst().orElse(null);
     }
 
     public void insertUser(User user) {
@@ -27,14 +28,14 @@ public class UserRepository {
         userStorage.saveUsers(userList);
     }
 
-    public void deleteUser(int no) {
-        userList.removeIf(user -> user.getNo() == no);
+    public void deleteUser(int userNo) {
+        userList.removeIf(user -> user.getUserNo() == userNo);
         userStorage.saveUsers(userList);
     }
 
     public void updateUser(User updatedUser) {
         for (int i = 0; i < userList.size(); i++) {
-            if (userList.get(i).getNo() == updatedUser.getNo()) {
+            if (userList.get(i).getUserNo() == updatedUser.getUserNo()) {
                 userList.set(i, updatedUser);
                 userStorage.saveUsers(userList);
                 break;

@@ -21,8 +21,12 @@ public class UserService {
         return userRepository.selectAllUsers();
     }
 
-    public User findUserByNo(int no) {
-        return userRepository.selectUserByNo(no);
+    public User findUserByNo(int userNo) {
+        User existingUser = userRepository.selectUserByNo(userNo);
+        if (existingUser == null) {
+            throw new IllegalArgumentException("해당 회원을 찾을 수 없습니다.");
+        }
+        return existingUser;
     }
 
     public void registerUser(User user) {
@@ -41,29 +45,26 @@ public class UserService {
         userRepository.insertUser(user);
     }
 
-    public void removeUser(int no) {
-        User existingUser = userRepository.selectUserByNo(no);
-        if (existingUser == null) {
-            throw new IllegalArgumentException("삭제 실패: 해당 회원을 찾을 수 없습니다.");
-        }
-        userRepository.deleteUser(no);
+    public void removeUser(int userNo) {
+        userRepository.deleteUser(userNo);
     }
 
-    public void modifyUser(User updatedUser, String currentPassword) {
-        User existingUser = userRepository.selectUserByNo(updatedUser.getNo());
-        if (existingUser == null) {
-            throw new IllegalArgumentException("회원 정보 수정 실패: 해당 회원을 찾을 수 없습니다.");
-        }
-
-        if (!existingUser.getPwd().equals(currentPassword)) {
-            throw new IllegalArgumentException("회원 정보 수정 실패: 비밀번호가 일치하지 않습니다.");
-        }
-
-        if (!existingUser.getPwd().equals(updatedUser.getPwd()) && !isValidPassword(updatedUser.getPwd())) {
-            throw new IllegalArgumentException("회원 정보 수정 실패: 새 비밀번호는 최소 " + MIN_PASSWORD_LENGTH + "자 이상이어야 하고 특수문자를 포함해야 합니다.");
-        }
-
+    public void modifyUser(User updatedUser) {
         userRepository.updateUser(updatedUser);
+    }
+
+    public void toggleUserActivation(User user) {
+        User existingUser = findUserByNo(user.getUserNo());
+
+        existingUser.setActivate(!existingUser.isActivate());
+
+        userRepository.updateUser(existingUser);
+    }
+
+    public void validatePassword(int userNo, String password) {
+        if(findUserByNo(userNo).getPwd().equals(password)) {
+            throw new IllegalArgumentException("비민번호가 일치하지 않습니다.");
+        }
     }
 
     private boolean isDuplicateUserId(String userId) {
@@ -74,19 +75,5 @@ public class UserService {
 
     private boolean isValidPassword(String password) {
         return password.length() >= MIN_PASSWORD_LENGTH && PASSWORD_PATTERN.matcher(password).matches();
-    }
-
-    public void toggleUserActivation(User user, String currentPassword) {
-        User existingUser = userRepository.selectUserByNo(user.getNo());
-        if (existingUser == null) {
-            throw new IllegalArgumentException("해당 회원을 찾을 수 없습니다.");
-        }
-
-        if (!existingUser.getPwd().equals(currentPassword)) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
-        }
-
-        existingUser.setActivate(!existingUser.isActivate());
-        userRepository.updateUser(existingUser);
     }
 }

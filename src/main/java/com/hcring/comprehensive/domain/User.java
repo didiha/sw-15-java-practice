@@ -7,7 +7,7 @@ import java.util.Arrays;
 * setter 제거 후 update 메소드만 사용
 * */
 public class User implements Serializable {
-    private int no;
+    private int userNo;
     private String id;
     private String pwd;
     private int age;
@@ -15,8 +15,8 @@ public class User implements Serializable {
     private MbtiType mbtiType;
     private boolean activate;
 
-    public User(int no, String id, String pwd, int age, String[] hobbies, MbtiType mbtiType, boolean activate) {
-        this.no = no;
+    public User(int userNo, String id, String pwd, int age, String[] hobbies, MbtiType mbtiType, boolean activate) {
+        this.userNo = userNo;
         this.id = id;
         this.pwd = pwd;
         this.age = age;
@@ -26,10 +26,10 @@ public class User implements Serializable {
     }
 
     public User update(String id, int age, String[] hobbies, MbtiType mbtiType, boolean activate) {
-        return new User(this.no, id, this.pwd, age, hobbies, mbtiType, this.activate);
+        return new User(this.userNo, id, this.pwd, age, hobbies, mbtiType, this.activate);
     }
 
-    public int getNo() { return no; }
+    public int getUserNo() { return userNo; }
     public String getId() { return id; }
     public String getPwd() { return pwd; }
     public int getAge() { return age; }
@@ -42,7 +42,7 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" +
-                "no=" + no +
+                "userNo=" + userNo +
                 ", id='" + id + '\'' +
                 ", age=" + age +
                 ", hobbies=" + Arrays.toString(hobbies) +

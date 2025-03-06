@@ -1,6 +1,8 @@
 package com.hcring.comprehensive.domain;
 
-public class Comment {
+import java.io.Serializable;
+
+public class Comment implements Serializable {
     private long commentId;
     private String text;
     private String author;
