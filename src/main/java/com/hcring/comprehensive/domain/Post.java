@@ -1,7 +1,7 @@
 package com.hcring.comprehensive.domain;
 
-import javax.xml.stream.events.Comment;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Post implements Serializable {
@@ -16,7 +16,7 @@ public class Post implements Serializable {
         this.title = title;
         this.content = content;
         this.author = author;
-        this.comments = comments;
+        this.comments = new ArrayList<>();
     }
 
     public long getPostNo() {return postNo;}
@@ -31,12 +31,24 @@ public class Post implements Serializable {
 
     @Override
     public String toString() {
-        return "Post{" +
-                "postNo=" + postNo +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", author='" + author + '\'' +
-                ", comments=" + comments +
-                '}';
+        StringBuilder sb = new StringBuilder();
+        sb.append("Post{")
+                .append("postNo=").append(postNo)
+                .append(", title='").append(title).append('\'')
+                .append(", content='").append(content).append('\'')
+                .append(", author='").append(author).append('\'')
+                .append(", \n\tcomments=[");
+
+        for (Comment comment : comments) {
+            sb.append("\n\t").append(comment.toString()).append(",");
+        }
+
+        // 마지막 댓글의 쉼표 제거
+        if (!comments.isEmpty()) {
+            sb.setLength(sb.length() - 1);
+        }
+        sb.append("\n]}\n");
+
+        return sb.toString();
     }
 }

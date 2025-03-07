@@ -1,8 +1,10 @@
 package com.hcring.comprehensive.service;
 
+import com.hcring.comprehensive.domain.Comment;
 import com.hcring.comprehensive.domain.Post;
 import com.hcring.comprehensive.persistence.PostRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,11 +40,16 @@ public class PostService {
     }
 
     public Post findPostByNo(long postNo) {
-        return postRepository.selectAllPosts()
+        Post returnPost = postRepository.selectAllPosts()
                 .stream()
                 .filter(post -> post.getPostNo() == postNo)
                 .findFirst()
-                .orElse(null); // 게시물이 없을 경우 null 반환
+                .orElse(null);
+        if(returnPost == null) {
+            throw new IllegalArgumentException("찾으시는 게시물이 존재하지 않습니다.");
+        }
+
+         return returnPost;
     }
 
     public void addPost(Post post) {
@@ -61,5 +68,20 @@ public class PostService {
 
     public void removePost(long deletePostNo) {
         postRepository.deletePost(deletePostNo);
+    }
+
+    public List<Comment> findCommentsByAuthor(String userId) {
+        List<Comment> userComments = new ArrayList<>();
+        List<Post> allPosts = findAllPosts();
+
+        for (Post post : allPosts) {
+            for (Comment comment : post.getComments()) { // 각 게시물의 댓글을 반복
+                if (comment.getAuthor().equals(userId)) { // 작성자가 일치하는지 확인
+                    userComments.add(comment); // 일치하면 리스트에 추가
+                }
+            }
+        }
+
+        return userComments;
     }
 }

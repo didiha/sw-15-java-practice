@@ -17,11 +17,11 @@ public class UserService {
 
     public UserService(UserRepository userRepository, PostService postService) {
         this.userRepository = userRepository;
-        this.postService = postService; // 이 시점에는 null일 수 있음
+        this.postService = postService;
     }
 
     public void setPostService(PostService postService) {
-        this.postService = postService; // PostService를 설정하는 메서드
+        this.postService = postService;
     }
 
     public List<User> findAllUsers() {

@@ -4,24 +4,24 @@ import java.io.Serializable;
 
 public class Comment implements Serializable {
     private long commentId;
-    private String text;
+    private String commentContent;
     private String author;
 
-    public Comment(long commentId, String text, String author) {
+    public Comment(long commentId, String commentContent, String author) {
         this.commentId = commentId;
-        this.text = text;
+        this.commentContent = commentContent;
         this.author = author;
     }
 
     public long getCommentId() {return commentId;}
-    public String getText() {return text;}
+    public String getCommentContent() {return commentContent;}
     public String getAuthor() {return author;}
 
     @Override
     public String toString() {
         return "Comment{" +
                 "commentId=" + commentId +
-                ", text='" + text + '\'' +
+                ", commentContent='" + commentContent + '\'' +
                 ", author='" + author + '\'' +
                 '}';
     }

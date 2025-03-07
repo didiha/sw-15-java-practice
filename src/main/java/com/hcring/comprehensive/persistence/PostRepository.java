@@ -19,13 +19,13 @@ public class PostRepository {
     }
 
     public void inputPost(Post post) {
-        long newPostNo = generateNewPostId();
+        long newPostNo = generateNewPostNo();
         post.setPostNo(newPostNo);
         postList.add(post);
         postStorage.savePosts(postList);
     }
 
-    private long generateNewPostId() {
+    private long generateNewPostNo() {
         return postList.stream()
                 .mapToLong(Post::getPostNo)
                 .max()
@@ -33,12 +33,9 @@ public class PostRepository {
     }
 
     public void updatePost(Post modifyPostNo) {
-        for (int i = 0; i < postList.size(); i++) {
-            if (postList.get(i).getPostNo() == modifyPostNo.getPostNo()) {
-                postList.set(i, modifyPostNo);
-                postStorage.savePosts(postList);
-                break;
-            }
+        if (!postList.isEmpty()) {
+            postList.set(0, modifyPostNo);
+            postStorage.savePosts(postList);
         }
     }
 
