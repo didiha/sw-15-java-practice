@@ -1,8 +1,10 @@
 package com.hcring.javaprograming.chap16;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Application5 {
 
@@ -22,14 +24,18 @@ public class Application5 {
                 .map(Book::getTitle)
                 .toList();
 
-                // 2. 2000년 이후 출판된 도서 중 가장 비싼 도서의 제목을 반환
-                String mostExpensiveBookAfter2000 = // 코드 작성
+        // 2. 2000년 이후 출판된 도서 중 가장 비싼 도서의 제목을 반환
+        String mostExpensiveBookAfter2000 = books.stream()
+                .filter(e -> e.getPublicationYear() >= 2000)
+                .collect(Collectors.maxBy(Comparator.comparingDouble(Book::getPrice)))
+                .map(Book::getTitle)
+                .orElse("해당 책 없음");
 
-                // 3. 각 출판 연도별로 도서의 수를 계산하여 맵으로 반환
-                Map<Integer, Long> booksCountByYear = // 코드 작성
+        // 3. 각 출판 연도별로 도서의 수를 계산하여 맵으로 반환
+//        Map<Integer, Long> booksCountByYear =
 
-                System.out.println(booksByAuthor); // 출력 예시: ["해리포터와 마법사의 돌", "해리포터와 비밀의 방"]
+        System.out.println(booksByAuthor); // 출력 예시: ["해리포터와 마법사의 돌", "해리포터와 비밀의 방"]
         System.out.println(mostExpensiveBookAfter2000); // 출력 예시: "다빈치 코드"
-        System.out.println(booksCountByYear); // 출력 예시: {1997=1, 1998=1, 2000=1, 2003=1, 1937=1}
+//        System.out.println(booksCountByYear); // 출력 예시: {1997=1, 1998=1, 2000=1, 2003=1, 1937=1}
     }
 }

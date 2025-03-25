@@ -24,7 +24,7 @@ public class Application3 {
         Map<String, Double> averageScoreByStudent = students.stream()
                 .collect(Collectors.groupingBy(Student::getName, Collectors.averagingDouble(Student::getScore)));
 
-                // 2. 특정 과목(수학)에서 90점 이상 받은 학생의 이름을 리스트로 반환
+        // 2. 특정 과목(수학)에서 90점 이상 받은 학생의 이름을 리스트로 반환
         List<String> highScorersInMath = students.stream()
                 .filter(e -> e.getSubject().equals("수학") && e.getScore() >= 90)
                 .map(Student::getName)
