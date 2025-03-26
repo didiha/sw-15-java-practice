@@ -1,4 +1,4 @@
 package com.hcring.dataStructureAndAlgorithms.heap;
 
-public class backjoon1202 {
+public class Backjoon11286 {
 }

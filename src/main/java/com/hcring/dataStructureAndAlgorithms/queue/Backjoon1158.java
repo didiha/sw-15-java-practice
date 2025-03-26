@@ -1,4 +1,4 @@
 package com.hcring.dataStructureAndAlgorithms.queue;
 
-public class backjoon1158 {
+public class Backjoon1158 {
 }

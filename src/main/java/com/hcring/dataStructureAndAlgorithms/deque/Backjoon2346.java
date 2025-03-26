@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.Scanner;
 import java.util.StringTokenizer;
 
-public class backjoon2346 {
+public class Backjoon2346 {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         String input = sc.nextLine();
@@ -19,5 +19,23 @@ public class backjoon2346 {
             deque.add(i);
         }
 
+        StringBuilder sb = new StringBuilder();
+        sb.append("<");
+
+        while(!deque.isEmpty()){
+            for(int i = 1; i < K; i++){
+                deque.addLast(deque.pollFirst());
+            }
+
+            sb.append(deque.pollFirst());
+
+            if(!deque.isEmpty()){
+                sb.append(", ");
+            }
+        }
+
+        sb.append(">");
+
+        System.out.println(sb);
     }
 }
