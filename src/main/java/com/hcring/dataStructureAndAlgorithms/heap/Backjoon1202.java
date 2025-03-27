@@ -11,8 +11,15 @@ public class Backjoon1202 {
         String inputNK = sc.nextLine();
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
-        for (int i = 0; i <= N; i++) {
+        int[][] MV = new int[2][N];
+        int[] C = new int[K];
 
+        for (int i = 0; i <= N; i++) {
+            String inputMV = sc.nextLine();
+            MV[0][i] = Integer.parseInt(st.nextToken());
+            MV[1][i] = Integer.parseInt(st.nextToken());
         }
+
+
     }
 }
