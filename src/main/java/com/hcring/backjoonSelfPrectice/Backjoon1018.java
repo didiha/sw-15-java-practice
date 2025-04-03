@@ -24,11 +24,15 @@ public class Backjoon1018 {
             }
         }
 
-        int count = checkTheChess(chess);
+        int count = checkTheChess(chess, N, M);
     }
 
-    public static int checkTheChess(char[][] chess){
+    public static int checkTheChess(char[][] chess, int N, int M){
+        for(int i = 0; i < N; i++){
+            for(int j = 0; j < M; j++){
 
+            }
+        }
 
         return 0;
     }
